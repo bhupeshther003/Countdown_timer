@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .countdown-container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .countdown-timer {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container countdown-container">
+    <h2 class="text-center mb-4">Countdown Timer</h2>
+    <div>
+        <label for="timerInput">Set Timer: </label>
+        <input type="number" id="timerInput" min="1" step="1" value="5">
+        <select id="timeUnit">
+            <option value="minutes" selected>Minutes</option>
+            <option value="hours">Hours</option>
+            <option value="seconds">Seconds</option>
+        </select>
+        <button id="setTimer" class="btn btn-warning">Set Timer</button>
+    </div>
+    <div id="countdown" class="countdown-timer"></div>
+    <div class="btn-container">
+        <button id="startTimer" class="btn btn-primary">Start Timer</button>
+        <button id="stopTimer" class="btn btn-danger">Stop Timer</button>
+        <button id="resetTimer" class="btn btn-secondary">Reset Timer</button>
+    </div>
+</div>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+    let countdownInterval;
+    let countdownTime;
+    let timerRunning = false;
+
+    function startTimer() {
+        if (!timerRunning) {
+            timerRunning = true;
+
+            countdownInterval = setInterval(function() {
+                const hours = Math.floor(countdownTime / 3600);
+                const minutes = Math.floor((countdownTime % 3600) / 60);
+                const seconds = countdownTime % 60;
+
+                document.getElementById('countdown').innerHTML =
+                    pad(hours) + 'h ' + pad(minutes) + 'm ' + pad(seconds) + 's ';
+
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    timerRunning = false;
+                    document.getElementById('countdown').innerHTML = 'EXPIRED';
+                } else {
+                    countdownTime--;
+                }
+            }, 1000);
+        }
+    }
+
+    function stopTimer() {
+        clearInterval(countdownInterval);
+        timerRunning = false;
+    }
+
+    function resetTimer() {
+        clearInterval(countdownInterval);
+        timerRunning = false;
+        document.getElementById('countdown').innerHTML = '';
+    }
+
+    function setTimer() {
+        if (!timerRunning) {
+            const userSetTime = parseInt(document.getElementById('timerInput').value, 10);
+            const selectedUnit = document.getElementById('timeUnit').value;
+
+            if (!isNaN(userSetTime) && userSetTime > 0) {
+                if (selectedUnit === 'hours') {
+                    countdownTime = userSetTime * 3600;
+                } else if (selectedUnit === 'minutes') {
+                    countdownTime = userSetTime * 60;
+                } else {
+                    countdownTime = userSetTime;
+                }
+
+                document.getElementById('countdown').innerHTML =
+                    pad(Math.floor(countdownTime / 3600)) + 'h ' +
+                    pad(Math.floor((countdownTime % 3600) / 60)) + 'm ' +
+                    pad(countdownTime % 60) + 's ';
+            }
+        }
+    }
+
+    function pad(value) {
+        return value < 10 ? '0' + value : value;
+    }
+
+    document.getElementById('startTimer').addEventListener('click', startTimer);
+    document.getElementById('stopTimer').addEventListener('click', stopTimer);
+    document.getElementById('resetTimer').addEventListener('click', resetTimer);
+    document.getElementById('setTimer').addEventListener('click', setTimer);
+</script>
+
+</body>
+</html>
